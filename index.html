@@ -446,36 +446,38 @@
         }
 
         function updateDreamsList() {
-            const dreamsDiv = document.getElementById('dreams');
-            if (!dreamsDiv) return;
+    const dreamsDiv = document.getElementById('dreams');
+    if (!dreamsDiv) return;
 
-            if (dreams.length === 0) {
-                dreamsDiv.innerHTML = '<p>Du har ikke gemt nogen drømme endnu.</p>';
-                return;
-            }
-            
-            dreamsDiv.innerHTML = dreams.map(dream => `
-                <div class="dream-entry">
-                    <strong>${new Date(dream.date).toLocaleDateString('da-DK')}</strong>
-                    <span class="mood-icon">
-                        ${dream.mood === 'happy' ? '😊' : dream.mood === 'neutral' ? '😐' : '😨'}
-                    </span>
-                    <p>${dream.text}</p>
-                    ${dream.imageUrl ? `
-                        <div class="dream-image">
-                            <img src="${dream.imageUrl}" alt="Visualisering af drømmen" 
-                                 style="width: 100%; max-width: 512px; border-radius: 8px; margin: 10px 0;">
-                        </div>
-                    ` : ''}
-                    <div class="analysis">
-                        <h4>Drømmeanalyse:</h4>
-                        <div class="theme-section">${dream.analysis}</div>
-                    </div>
-                    <button class="delete-btn" onclick="deleteDream(${dream.id})">Slet drøm</button>
-                </div>
-            `).join('');
-        }
-
+    if (dreams.length === 0) {
+        dreamsDiv.innerHTML = '<p>Du har ikke gemt nogen drømme endnu.</p>';
+        return;
+    }
+    
+    dreamsDiv.innerHTML = dreams.map(dream => `
+        <div class="dream-entry">
+            <strong>${new Date(dream.date).toLocaleDateString('da-DK')}</strong>
+            <span class="mood-icon">
+                ${dream.mood === 'happy' ? '😊' : dream.mood === 'neutral' ? '😐' : '😨'}
+            </span>
+            <p>${dream.text}</p>
+            <div class="dream-image">
+                ${dream.imageUrl ? `
+                    <img src="${dream.imageUrl}" alt="Visualisering af drømmen" 
+                         style="width: 100%; max-width: 512px; border-radius: 8px; margin: 10px 0;">
+                    <button onclick="generateNewImage(${dream.id})" class="regenerate-btn">
+                        🎨 Generer ny visualisering
+                    </button>
+                ` : ''}
+            </div>
+            <div class="analysis">
+                <h4>Drømmeanalyse:</h4>
+                <div class="theme-section">${dream.analysis}</div>
+            </div>
+            <button class="delete-btn" onclick="deleteDream(${dream.id})">Slet drøm</button>
+        </div>
+    `).join('');
+}
         // Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
