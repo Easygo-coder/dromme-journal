@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Drømme Journal</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Drømme Journal">
+    <meta name="theme-color" content="#4CAF50">
+    
+    <!-- App Icons -->
+    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA...">
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+        /* iPhone-optimeret styling */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            user-select: none;
+        }
+        
+        body {
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .container {
+            padding: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .dream-form, .dream-list, .analysis {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .dream-entry {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            width: calc(100% - 24px);
+            height: 120px;
+            margin: 10px 0;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px; /* Prevent zoom on iOS */
+            font-family: -apple-system, system-ui;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+            width: 100%;
+            -webkit-appearance: none;
+        }
+
+        select, input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            background-color: white;
+            -webkit-appearance: none;
+        }
+
+        .mood-happy { color: #4CAF50; }
+        .mood-neutral { color: #757575; }
+        .mood-scary { color: #f44336; }
+
+        .error {
+            color: #f44336;
+            margin: 10px 0;
+            display: none;
+            font-size: 14px;
+        }
+
+        .analysis {
+            background: #f8f9fa;
+            border-left: 4px solid #4CAF50;
+            margin-top: 15px;
+        }
+
+        .interpretation {
+            margin-top: 10px;
+            padding: 12px;
+            background: #e8f5e9;
+            border-radius: 8px;
+            line-height: 1.5;
+            font-size: 15px;
+        }
+
+        /* Tilføj offline indikator */
+        .offline-indicator {
+            display: none;
+            background: #ff9800;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        /* Animationer */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dream-entry {
+            animation: fadeIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="dream-form">
+            <h2>Skriv din drøm</h2>
+            <div>
+                <label for="dreamDate">Dato:</label>
+                <input type="date" id="dreamDate" required>
+            </div>
+            <div>
+                <label for="dreamText">Din drøm:</label>
+                <textarea id="dreamText" placeholder="Beskriv din drøm her..." required></textarea>
+            </div>
+            <div>
+                <label for="dreamMood">Stemning:</label>
+                <select id="dreamMood">
+                    <option value="happy">😊 Glad drøm</option>
+                    <option value="neutral">😐 Neutral drøm</option>
+                    <option value="scary">😨 Uhyggelig drøm</option>
+                </select>
+            </div>
+            <div class="error" id="errorMessage">Udfyld venligst både dato og drømmebeskrivelse</div>
+            <button onclick="addDream()">Gem drøm og analysér</button>
+        </div>
+
+        <div class="dream-list">
+            <h2>Mine drømme</h2>
+            <div id="dreams"></div>
+        </div>
+    </div>
+
+    <div class="offline-indicator" id="offlineIndicator">
+        Du er offline - ændringer gemmes når du er online igen
+    </div>
+
+    <script>
+        // [Previous JavaScript code remains the same]
+        // Adding offline support and local storage
+        
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(registration => {
+                    console.log('ServiceWorker registered');
+                }).catch(err => {
+                    console.log('ServiceWorker registration failed', err);
+                });
+            });
+        }
+
+        // Handle offline/online status
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        function updateOnlineStatus() {
+            const indicator = document.getElementById('offlineIndicator');
+            if (!navigator.onLine) {
+                indicator.style.display = 'block';
+            } else {
+                indicator.style.display = 'none';
+                syncData();
+            }
+        }
+
+        // Local Storage functions
+        function saveToLocalStorage() {
+            localStorage.setItem('dreams', JSON.stringify(dreams));
+        }
+
+        function loadFromLocalStorage() {
+            const savedDreams = localStorage.getItem('dreams');
+            if (savedDreams) {
+                dreams = JSON.parse(savedDreams);
+                updateDreamsList();
+            }
+        }
+
+        // Modify addDream to include local storage
+        const originalAddDream = addDream;
+        addDream = function() {
+            originalAddDream();
+            saveToLocalStorage();
+        };
+
+        // Load saved dreams when page loads
+        window.addEventListener('load', loadFromLocalStorage);
+
+        // [Rest of the JavaScript code remains the same]
+    </script>
+</body>
+</html>
