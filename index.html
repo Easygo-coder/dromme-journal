@@ -363,7 +363,47 @@
         updateDreamsList();
     }
 }
+async function generateNewImage(dreamId) {
+    const dream = dreams.find(d => d.id === dreamId);
+    if (!dream) return;
 
+    const button = event.target;
+    const originalButtonText = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Genererer nyt billede...';
+
+    try {
+        const response = await fetch('/.netlify/functions/generateImage', {
+            method: 'POST',
+            body: JSON.stringify({ 
+                dreamText: dream.text,
+                mood: dream.mood,
+                regenerate: true 
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        // Opdater billedet i dreams array
+        dream.imageUrl = data.imageUrl;
+        saveToLocalStorage();
+        updateDreamsList();
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Der opstod en fejl under generering af nyt billede. Prøv igen.');
+    } finally {
+        button.disabled = false;
+        button.textContent = originalButtonText;
+    }
+}
         async function addDream() {
             const dreamText = document.getElementById('dreamText').value.trim();
             const dreamDate = document.getElementById('dreamDate').value;
