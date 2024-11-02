@@ -12,6 +12,35 @@
     <meta name="theme-color" content="#4CAF50">
     
     <style>
+        .regenerate-btn {
+    background: #9c27b0;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 14px;
+    width: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.regenerate-btn:hover {
+    background: #7b1fa2;
+}
+
+.regenerate-btn:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+}
+
+.dream-image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
         body {
             font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             max-width: 800px;
