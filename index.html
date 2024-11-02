@@ -306,26 +306,63 @@
             updateOnlineStatus();
         };
 
-        async function generateDreamImage(dreamText) {
-            try {
-                const response = await fetch('/.netlify/functions/generateImage', {
-                    method: 'POST',
-                    body: JSON.stringify({ dreamText }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                const data = await response.json();
-                if (data.imageUrl) {
-                    return data.imageUrl;
-                }
-                throw new Error('No image URL received');
-            } catch (error) {
-                console.error('Failed to generate image:', error);
-                return null;
+        async function addDream() {
+    const dreamText = document.getElementById('dreamText').value.trim();
+    const dreamDate = document.getElementById('dreamDate').value;
+    const dreamMood = document.getElementById('dreamMood').value;
+    
+    if (!dreamText || !dreamDate) {
+        alert('Udfyld venligst både dato og drømmebeskrivelse');
+        return;
+    }
+    
+    // Vis loading state
+    const submitButton = document.querySelector('button');
+    submitButton.disabled = true;
+    submitButton.textContent = 'Analyserer drøm og genererer billede...';
+    
+    try {
+        const response = await fetch('/.netlify/functions/generateImage', {
+            method: 'POST',
+            body: JSON.stringify({ dreamText, mood: dreamMood }),
+            headers: {
+                'Content-Type': 'application/json'
             }
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            throw new Error(data.error);
         }
+
+        const newDream = {
+            text: dreamText,
+            date: dreamDate,
+            mood: dreamMood,
+            analysis: data.analysis,
+            imageUrl: data.imageUrl,
+            id: Date.now()
+        };
+        
+        dreams.unshift(newDream);
+        saveToLocalStorage();
+        
+        document.getElementById('dreamText').value = '';
+        const dateInput = document.getElementById('dreamDate');
+        if (dateInput) {
+            dateInput.valueAsDate = new Date();
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Der opstod en fejl under analysen. Prøv igen.');
+    } finally {
+        // Reset button
+        submitButton.disabled = false;
+        submitButton.textContent = 'Gem drøm og analysér';
+        updateDreamsList();
+    }
+}
 
         async function addDream() {
             const dreamText = document.getElementById('dreamText').value.trim();
