@@ -64,6 +64,21 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes loadingDots {
+            0% { content: '.'; }
+            33% { content: '..'; }
+            66% { content: '...'; }
+            100% { content: '.'; }
+        }
+
+        .loading-dots::after {
+            content: '.';
+            animation: loadingDots 1.5s infinite;
+            display: inline-block;
+            width: 20px;
+            text-align: left;
+        }
+
         textarea {
             width: calc(100% - 24px);
             height: 120px;
@@ -84,7 +99,7 @@
             width: 100%;
             font-size: 16px;
             margin: 10px 0;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
         }
 
         button:hover {
@@ -146,6 +161,18 @@
             max-width: 100%;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .dream-image img:hover {
+            transform: scale(1.02);
+        }
+
+        .processing-time {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+            font-style: italic;
         }
 
         .offline-indicator {
@@ -158,6 +185,7 @@
             text-align: center;
             padding: 10px;
             display: none;
+            z-index: 1000;
         }
 
         @media (max-width: 600px) {
@@ -243,12 +271,13 @@
                 return;
             }
             
-            // Show loading state
+            // Show loading state with progress
             const submitButton = document.querySelector('button');
             submitButton.disabled = true;
-            submitButton.textContent = 'Analyserer drøm og genererer billede...';
+            submitButton.innerHTML = 'Analyserer drøm<span class="loading-dots"></span>';
             
             try {
+                const startTime = Date.now();
                 const response = await fetch('/.netlify/functions/generateImage', {
                     method: 'POST',
                     body: JSON.stringify({ 
@@ -262,6 +291,7 @@
                 });
                 
                 const data = await response.json();
+                const processingTime = ((Date.now() - startTime) / 1000).toFixed(1);
                 
                 if (data.error) {
                     throw new Error(data.error);
@@ -273,6 +303,7 @@
                     mood: dreamMood,
                     analysis: data.analysis,
                     imageUrl: data.imageUrl,
+                    processingTime: processingTime,
                     id: Date.now()
                 };
                 
@@ -284,11 +315,11 @@
                 if (dateInput) {
                     dateInput.valueAsDate = new Date();
                 }
+                
             } catch (error) {
                 console.error('Error:', error);
-                alert('Der opstod en fejl under analysen. Prøv igen.');
+                alert('Der opstod en fejl. Prøv igen om et øjeblik.');
             } finally {
-                // Reset button
                 submitButton.disabled = false;
                 submitButton.textContent = 'Gem drøm og analysér';
                 updateDreamsList();
@@ -302,7 +333,7 @@
             const button = event.target;
             const originalButtonText = button.textContent;
             button.disabled = true;
-            button.textContent = 'Genererer nyt billede...';
+            button.innerHTML = 'Genererer nyt billede<span class="loading-dots"></span>';
 
             try {
                 const response = await fetch('/.netlify/functions/generateImage', {
@@ -333,7 +364,7 @@
                 alert('Der opstod en fejl under generering af nyt billede. Prøv igen.');
             } finally {
                 button.disabled = false;
-                button.textContent = originalButtonText;
+                button.innerHTML = originalButtonText;
             }
         }
 
@@ -392,6 +423,9 @@
                             <button onclick="generateNewImage(${dream.id})" class="regenerate-btn">
                                 🎨 Generer ny visualisering
                             </button>
+                            ${dream.processingTime ? `
+                                <div class="processing-time">Behandlingstid: ${dream.processingTime} sekunder</div>
+                            ` : ''}
                         ` : ''}
                     </div>
                     <div class="analysis">
