@@ -1,7 +1,6 @@
 {
   "name": "dromme-journal",
   "version": "1.0.0",
-  "description": "Drømme journal med AI analyse",
   "dependencies": {
     "axios": "^1.6.2"
   }
