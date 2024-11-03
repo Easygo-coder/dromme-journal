@@ -12,35 +12,6 @@
     <meta name="theme-color" content="#4CAF50">
     
     <style>
-        .regenerate-btn {
-    background: #9c27b0;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 10px;
-    font-size: 14px;
-    width: auto;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.regenerate-btn:hover {
-    background: #7b1fa2;
-}
-
-.regenerate-btn:disabled {
-    background: #cccccc;
-    cursor: not-allowed;
-}
-
-.dream-image {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
         body {
             font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             max-width: 800px;
@@ -110,6 +81,30 @@
             background: #cc0000;
         }
 
+        .regenerate-btn {
+            background: #9c27b0;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+            width: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .regenerate-btn:hover {
+            background: #7b1fa2;
+        }
+
+        .regenerate-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
         input[type="date"], select {
             width: 100%;
             padding: 12px;
@@ -145,6 +140,9 @@
         .dream-image {
             margin: 15px 0;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .dream-image img {
@@ -211,117 +209,6 @@
     </div>
 
     <script>
-        // Tematiske kategorier og deres relaterede koncepter
-        const dreamThemes = {
-            social: {
-                keywords: ['sammen', 'møde', 'tale', 'snakke', 'personer', 'mennesker', 'venner', 'familie'],
-                analysis: 'Din drøm afspejler dine sociale relationer og hvordan du forholder dig til andre mennesker.',
-                insight: 'Overvej kvaliteten af dine relationer og hvordan du kommunikerer med andre.'
-            },
-            growth: {
-                keywords: ['ny', 'udvikling', 'lære', 'prøve', 'udfordring', 'kæmpe', 'forsøge'],
-                analysis: 'Der er fokus på personlig vækst og udvikling i din drøm.',
-                insight: 'Du er muligvis i en periode med personlig transformation eller læring.'
-            },
-            emotional: {
-                keywords: ['føle', 'bange', 'glad', 'ked', 'vred', 'nervøs', 'rolig'],
-                analysis: 'Drømmen udtrykker stærke følelsesmæssige temaer.',
-                insight: 'Vær opmærksom på dine følelser og hvordan du håndterer dem.'
-            },
-            environment: {
-                keywords: ['sted', 'rum', 'bygning', 'natur', 'by', 'område', 'lokation'],
-                analysis: 'Omgivelserne i din drøm kan repræsentere din livssituation eller sindstilstand.',
-                insight: 'Tænk over hvordan du har det i dine nuværende omgivelser.'
-            }
-        };
-        function analyzeContext(text) {
-            const cleanText = text.toLowerCase()
-                .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '')
-                .replace(/\s{2,}/g, ' ');
-
-            const themes = [];
-            for (const [theme, data] of Object.entries(dreamThemes)) {
-                const themeScore = data.keywords.reduce((score, keyword) => {
-                    return score + (cleanText.includes(keyword) ? 1 : 0);
-                }, 0);
-                if (themeScore > 0) {
-                    themes.push({ theme, score: themeScore, data });
-                }
-            }
-
-            return generateContextAnalysis(themes, text);
-        }
-
-        function generateContextAnalysis(themes, originalText) {
-            if (themes.length === 0) {
-                return generateGeneralAnalysis(originalText);
-            }
-
-            themes.sort((a, b) => b.score - a.score);
-            
-            return formatThematicAnalysis(themes, originalText);
-        }
-
-        function generateGeneralAnalysis(text) {
-            const wordCount = text.split(' ').length;
-            const hasAction = /\b(gør|går|kommer|tager|ser)\b/i.test(text);
-            const hasPeople = /\b(person|menneske|folk|nogen|han|hun|de)\b/i.test(text);
-            const hasLocations = /\b(sted|rum|hus|bygning|by|område)\b/i.test(text);
-
-            let analysis = "Din drøm virker ";
-            
-            if (wordCount > 100) {
-                analysis += "meget detaljeret, hvilket kan indikere en betydningsfuld oplevelse. ";
-            } else if (wordCount > 50) {
-                analysis += "velovervejet og sammenhængende. ";
-            } else {
-                analysis += "koncis og fokuseret. ";
-            }
-
-            if (hasAction) {
-                analysis += "\n\nDer er handling og bevægelse i drømmen, hvilket ofte afspejler en proces af forandring eller udvikling i dit liv. ";
-            }
-
-            if (hasPeople) {
-                analysis += "\n\nTilstedeværelsen af andre i drømmen kan pege på vigtige relationer eller aspekter af dig selv. ";
-            }
-
-            if (hasLocations) {
-                analysis += "\n\nDe beskrevne steder eller omgivelser kan repræsentere forskellige områder af dit liv eller din psyke. ";
-            }
-
-            analysis += "\n\nRefleksionspunkter:\n";
-            analysis += "• Hvilke følelser efterlod drømmen dig med?\n";
-            analysis += "• Er der elementer i drømmen der minder dig om aktuelle situationer i dit liv?\n";
-            analysis += "• Hvad er det første der falder dig ind, når du tænker på drømmen?\n";
-            analysis += "• Er der noget i drømmen der overraskede dig?";
-
-            return analysis;
-        }
-
-        function formatThematicAnalysis(themes, originalText) {
-            let analysis = `Din drøm indeholder interessante temaer:\n\n`;
-            
-            themes.forEach(theme => {
-                analysis += `${theme.data.analysis}\n`;
-                analysis += `${theme.data.insight}\n\n`;
-            });
-
-            return analysis;
-        }
-
-        function analyzeMood(mood) {
-            switch(mood) {
-                case 'happy':
-                    return "\n\nDen positive stemning i drømmen kan indikere en periode med optimisme eller personlig udvikling.";
-                case 'scary':
-                    return "\n\nDen urolige stemning kan pege på underliggende bekymringer eller udfordringer der søger din opmærksomhed.";
-                case 'neutral':
-                    return "\n\nDen neutrale stemning kan indikere en periode med reflektion eller observation i dit liv.";
-                default:
-                    return "\n\nDrømmens stemning er en vigtig nøgle til at forstå dens personlige betydning for dig.";
-            }
-        }
         let dreams = [];
         
         // Initialize app
@@ -336,104 +223,6 @@
         };
 
         async function addDream() {
-    const dreamText = document.getElementById('dreamText').value.trim();
-    const dreamDate = document.getElementById('dreamDate').value;
-    const dreamMood = document.getElementById('dreamMood').value;
-    
-    if (!dreamText || !dreamDate) {
-        alert('Udfyld venligst både dato og drømmebeskrivelse');
-        return;
-    }
-    
-    // Vis loading state
-    const submitButton = document.querySelector('button');
-    submitButton.disabled = true;
-    submitButton.textContent = 'Analyserer drøm og genererer billede...';
-    
-    try {
-        const response = await fetch('/.netlify/functions/generateImage', {
-            method: 'POST',
-            body: JSON.stringify({ dreamText, mood: dreamMood }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        const data = await response.json();
-        
-        if (data.error) {
-            throw new Error(data.error);
-        }
-
-        const newDream = {
-            text: dreamText,
-            date: dreamDate,
-            mood: dreamMood,
-            analysis: data.analysis,
-            imageUrl: data.imageUrl,
-            id: Date.now()
-        };
-        
-        dreams.unshift(newDream);
-        saveToLocalStorage();
-        
-        document.getElementById('dreamText').value = '';
-        const dateInput = document.getElementById('dreamDate');
-        if (dateInput) {
-            dateInput.valueAsDate = new Date();
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Der opstod en fejl under analysen. Prøv igen.');
-    } finally {
-        // Reset button
-        submitButton.disabled = false;
-        submitButton.textContent = 'Gem drøm og analysér';
-        updateDreamsList();
-    }
-}
-async function generateNewImage(dreamId) {
-    const dream = dreams.find(d => d.id === dreamId);
-    if (!dream) return;
-
-    const button = event.target;
-    const originalButtonText = button.textContent;
-    button.disabled = true;
-    button.textContent = 'Genererer nyt billede...';
-
-    try {
-        const response = await fetch('/.netlify/functions/generateImage', {
-            method: 'POST',
-            body: JSON.stringify({ 
-                dreamText: dream.text,
-                mood: dream.mood,
-                regenerate: true 
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        const data = await response.json();
-        
-        if (data.error) {
-            throw new Error(data.error);
-        }
-
-        // Opdater billedet i dreams array
-        dream.imageUrl = data.imageUrl;
-        saveToLocalStorage();
-        updateDreamsList();
-
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Der opstod en fejl under generering af nyt billede. Prøv igen.');
-    } finally {
-        button.disabled = false;
-        button.textContent = originalButtonText;
-    }
-}
-        async function addDream() {
             const dreamText = document.getElementById('dreamText').value.trim();
             const dreamDate = document.getElementById('dreamDate').value;
             const dreamMood = document.getElementById('dreamMood').value;
@@ -446,40 +235,92 @@ async function generateNewImage(dreamId) {
             // Show loading state
             const submitButton = document.querySelector('button');
             submitButton.disabled = true;
-            submitButton.textContent = 'Genererer drømmeanalyse og billede...';
-            
-            const analysis = analyzeContext(dreamText) + analyzeMood(dreamMood);
-            let imageUrl = null;
+            submitButton.textContent = 'Analyserer drøm og genererer billede...';
             
             try {
-                imageUrl = await generateDreamImage(dreamText);
+                const response = await fetch('/.netlify/functions/generateImage', {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        dreamText: dreamText,
+                        mood: dreamMood
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                const newDream = {
+                    text: dreamText,
+                    date: dreamDate,
+                    mood: dreamMood,
+                    analysis: data.analysis,
+                    imageUrl: data.imageUrl,
+                    id: Date.now()
+                };
+                
+                dreams.unshift(newDream);
+                saveToLocalStorage();
+                
+                document.getElementById('dreamText').value = '';
+                const dateInput = document.getElementById('dreamDate');
+                if (dateInput) {
+                    dateInput.valueAsDate = new Date();
+                }
             } catch (error) {
-                console.error('Kunne ikke generere billede:', error);
+                console.error('Error:', error);
+                alert('Der opstod en fejl under analysen. Prøv igen.');
+            } finally {
+                // Reset button
+                submitButton.disabled = false;
+                submitButton.textContent = 'Gem drøm og analysér';
+                updateDreamsList();
             }
-            
-            const newDream = {
-                text: dreamText,
-                date: dreamDate,
-                mood: dreamMood,
-                analysis: analysis,
-                imageUrl: imageUrl,
-                id: Date.now()
-            };
-            
-            dreams.unshift(newDream);
-            saveToLocalStorage();
-            
-            document.getElementById('dreamText').value = '';
-            const dateInput = document.getElementById('dreamDate');
-            if (dateInput) {
-                dateInput.valueAsDate = new Date();
+        }
+        async function generateNewImage(dreamId) {
+            const dream = dreams.find(d => d.id === dreamId);
+            if (!dream) return;
+
+            const button = event.target;
+            const originalButtonText = button.textContent;
+            button.disabled = true;
+            button.textContent = 'Genererer nyt billede...';
+
+            try {
+                const response = await fetch('/.netlify/functions/generateImage', {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        dreamText: dream.text,
+                        mood: dream.mood,
+                        regenerate: true 
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                dream.imageUrl = data.imageUrl;
+                saveToLocalStorage();
+                updateDreamsList();
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Der opstod en fejl under generering af nyt billede. Prøv igen.');
+            } finally {
+                button.disabled = false;
+                button.textContent = originalButtonText;
             }
-            
-            // Reset button
-            submitButton.disabled = false;
-            submitButton.textContent = 'Gem drøm og analysér';
-            
-            updateDreamsList();
         }
 
         function saveToLocalStorage() {
@@ -515,38 +356,39 @@ async function generateNewImage(dreamId) {
         }
 
         function updateDreamsList() {
-    const dreamsDiv = document.getElementById('dreams');
-    if (!dreamsDiv) return;
+            const dreamsDiv = document.getElementById('dreams');
+            if (!dreamsDiv) return;
 
-    if (dreams.length === 0) {
-        dreamsDiv.innerHTML = '<p>Du har ikke gemt nogen drømme endnu.</p>';
-        return;
-    }
-    
-    dreamsDiv.innerHTML = dreams.map(dream => `
-        <div class="dream-entry">
-            <strong>${new Date(dream.date).toLocaleDateString('da-DK')}</strong>
-            <span class="mood-icon">
-                ${dream.mood === 'happy' ? '😊' : dream.mood === 'neutral' ? '😐' : '😨'}
-            </span>
-            <p>${dream.text}</p>
-            <div class="dream-image">
-                ${dream.imageUrl ? `
-                    <img src="${dream.imageUrl}" alt="Visualisering af drømmen" 
-                         style="width: 100%; max-width: 512px; border-radius: 8px; margin: 10px 0;">
-                    <button onclick="generateNewImage(${dream.id})" class="regenerate-btn">
-                        🎨 Generer ny visualisering
-                    </button>
-                ` : ''}
-            </div>
-            <div class="analysis">
-                <h4>Drømmeanalyse:</h4>
-                <div class="theme-section">${dream.analysis}</div>
-            </div>
-            <button class="delete-btn" onclick="deleteDream(${dream.id})">Slet drøm</button>
-        </div>
-    `).join('');
-}
+            if (dreams.length === 0) {
+                dreamsDiv.innerHTML = '<p>Du har ikke gemt nogen drømme endnu.</p>';
+                return;
+            }
+            
+            dreamsDiv.innerHTML = dreams.map(dream => `
+                <div class="dream-entry">
+                    <strong>${new Date(dream.date).toLocaleDateString('da-DK')}</strong>
+                    <span class="mood-icon">
+                        ${dream.mood === 'happy' ? '😊' : dream.mood === 'neutral' ? '😐' : '😨'}
+                    </span>
+                    <p>${dream.text}</p>
+                    <div class="dream-image">
+                        ${dream.imageUrl ? `
+                            <img src="${dream.imageUrl}" alt="Visualisering af drømmen" 
+                                 style="width: 100%; max-width: 512px; border-radius: 8px; margin: 10px 0;">
+                            <button onclick="generateNewImage(${dream.id})" class="regenerate-btn">
+                                🎨 Generer ny visualisering
+                            </button>
+                        ` : ''}
+                    </div>
+                    <div class="analysis">
+                        <h4>Drømmeanalyse:</h4>
+                        <div class="theme-section">${dream.analysis}</div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteDream(${dream.id})">Slet drøm</button>
+                </div>
+            `).join('');
+        }
+
         // Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
