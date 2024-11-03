@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="Drømme Journal">
     <meta name="theme-color" content="#4CAF50">
     
-   <style>
+    <style>
         body {
             font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             max-width: 800px;
@@ -57,14 +57,14 @@
 
         .theme-section {
             white-space: pre-line;
-        }        
-        
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
-        }        
-       
-       textarea {
+        }
+
+        textarea {
             width: calc(100% - 24px);
             height: 120px;
             margin: 10px 0;
@@ -124,11 +124,6 @@
             background: #7b1fa2;
         }
 
-        .regenerate-btn:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-        }
-
         input[type="date"], select {
             width: 100%;
             padding: 12px;
@@ -137,28 +132,6 @@
             border-radius: 12px;
             font-size: 16px;
             background-color: white;
-        }
-
-        .analysis {
-            background: #f8f9fa;
-            border-left: 4px solid #4CAF50;
-            margin-top: 15px;
-            font-size: 15px;
-            line-height: 1.6;
-        }
-
-        .dream-illustration {
-            background: #f1f8e9;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 10px 0;
-            font-style: italic;
-        }
-
-        .illustration-header {
-            color: #2E7D32;
-            font-weight: bold;
-            margin-bottom: 10px;
         }
 
         .dream-image {
@@ -219,6 +192,19 @@
                     <option value="scary">😨 Uhyggelig drøm</option>
                 </select>
             </div>
+            <div>
+                <label for="imageStyle">Vælg billedstil:</label>
+                <select id="imageStyle">
+                    <option value="surreal">🎨 Surrealistisk drømmestil</option>
+                    <option value="painting">🖼️ Maleri</option>
+                    <option value="digital">💻 Digital kunst</option>
+                    <option value="watercolor">💧 Akvarel</option>
+                    <option value="realistic">📷 Realistisk</option>
+                    <option value="fantasy">🌟 Fantasy</option>
+                    <option value="abstract">🎯 Abstrakt</option>
+                    <option value="minimalist">⚪ Minimalistisk</option>
+                </select>
+            </div>
             <button onclick="addDream()">Gem drøm og analysér</button>
         </div>
 
@@ -250,6 +236,7 @@
             const dreamText = document.getElementById('dreamText').value.trim();
             const dreamDate = document.getElementById('dreamDate').value;
             const dreamMood = document.getElementById('dreamMood').value;
+            const imageStyle = document.getElementById('imageStyle').value;
             
             if (!dreamText || !dreamDate) {
                 alert('Udfyld venligst både dato og drømmebeskrivelse');
@@ -266,7 +253,8 @@
                     method: 'POST',
                     body: JSON.stringify({ 
                         dreamText: dreamText,
-                        mood: dreamMood
+                        mood: dreamMood,
+                        imageStyle: imageStyle
                     }),
                     headers: {
                         'Content-Type': 'application/json'
@@ -306,6 +294,7 @@
                 updateDreamsList();
             }
         }
+
         async function generateNewImage(dreamId) {
             const dream = dreams.find(d => d.id === dreamId);
             if (!dream) return;
@@ -321,6 +310,7 @@
                     body: JSON.stringify({ 
                         dreamText: dream.text,
                         mood: dream.mood,
+                        imageStyle: document.getElementById('imageStyle').value,
                         regenerate: true 
                     }),
                     headers: {
