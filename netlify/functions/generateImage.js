@@ -1,16 +1,39 @@
 const axios = require('axios');
 
+function getImagePrompt(dreamText, style) {
+    const stylePrompts = {
+        surreal: `A surreal, dreamlike interpretation: ${dreamText}. Style: Surrealist art like Salvador Dali, with floating elements and impossible perspectives. Ethereal lighting and dreamy atmosphere.`,
+        
+        painting: `An oil painting interpretation of this dream: ${dreamText}. Style: Classical oil painting technique with rich textures and dramatic lighting, in the style of the old masters.`,
+        
+        digital: `A modern digital art interpretation: ${dreamText}. Style: High-quality digital art with vivid colors and modern design elements, sleek and polished finish.`,
+        
+        watercolor: `A soft watercolor interpretation: ${dreamText}. Style: Gentle watercolor technique with flowing colors and soft edges, ethereal and atmospheric.`,
+        
+        realistic: `A photorealistic interpretation: ${dreamText}. Style: Hyperrealistic photography style with precise details and natural lighting.`,
+        
+        fantasy: `A fantasy art interpretation: ${dreamText}. Style: Epic fantasy art with magical elements and otherworldly atmosphere, rich in detail and wonder.`,
+        
+        abstract: `An abstract interpretation: ${dreamText}. Style: Modern abstract art focusing on shapes, colors, and emotions rather than literal representation.`,
+        
+        minimalist: `A minimalist interpretation: ${dreamText}. Style: Clean, minimal design with essential elements only, focused on simplicity and space.`
+    };
+
+    return stylePrompts[style] || stylePrompts.surreal;
+}
+
 exports.handler = async function(event, context) {
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: 'Method Not Allowed' };
     }
 
     try {
-        const { dreamText, mood } = JSON.parse(event.body);
+        const { dreamText, mood, imageStyle } = JSON.parse(event.body);
         
         // Generer billede
+        const prompt = getImagePrompt(dreamText, imageStyle);
         const imageResponse = await axios.post('https://api.openai.com/v1/images/generations', {
-            prompt: `A dream-like surreal image: ${dreamText}`,
+            prompt: prompt,
             n: 1,
             size: "1024x1024",
             model: "dall-e-3",
